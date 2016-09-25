@@ -20,6 +20,25 @@
 			<link rel="stylesheet" href="css/style.css" />
 			<link rel="stylesheet" href="css/style-xlarge.css" />
 		</noscript>
+		<script>
+		function f() {
+			var location = document.querySelector('#location').value;
+			$.post('/pharma/api/leader', JSON.stringify({"location": location}), null, 'json')
+				.done(function (data) {
+					var parent = document.getElementById("displayId");
+					var child = document.getElementById("locationHeader");
+					child.parentNode.removeChild(child);
+
+					child = document.getElementById("idDisplayer");
+					child.innerHTML = "Your unique ID is: " + data.leaderId +
+					                  "<br>Keep it safe.";
+
+					child = document.getElementById("createButton");
+					child.innerHTML = "Go Back";
+					child.onclick = function() { document.location.href = "/doctors.html"; }
+			});
+		}
+		</script>
 	</head>
 	<body id="top">
 
@@ -38,11 +57,12 @@
 			<section id="banner">
 				<div class="inner">			
 					<form>
-
-					<h2><input type="location" placeholder="Location"></h2>
-					<p>Enter your location above.</a></p>					
-					<ul class="actions">
-						<li><a href="order.html" class="button big special">Create Account</a></li>
+						<div id="displayId">
+							<h2 id="locationHeader"><input id="location" placeholder="Location"></h2>
+							<p id="idDisplayer">Enter your location above.</p>
+						</div>
+					<ul class="actions" >
+						<li><a id="createButton" class="button big special" onClick="f()">Create Account</a></li>
 					</ul>
 				</div>
 			</section>

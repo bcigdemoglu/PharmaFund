@@ -20,6 +20,14 @@
 			<link rel="stylesheet" href="css/style.css" />
 			<link rel="stylesheet" href="css/style-xlarge.css" />
 		</noscript>
+        <script>
+    function f1()
+    {
+         var loginId = document.querySelector('#loginId').value;
+         document.location.href = "/order.html?lid="+loginId;
+    }
+
+  </script>
 	</head>
 	<body id="top">
 
@@ -36,18 +44,16 @@
 
 		<!-- Banner -->
 			<section id="banner">
-				<div class="inner">			
-					<form>
-
-					<h2><input type="ID" placeholder="User ID"></h2>
-					<p>Enter your ID above, or create an account.</a></p>					
-					<ul class="actions">
-						<li><a href="order.html" class="button big special">Login</a></li>
-						<li><a href="newaccount.html" class="button big alt">Create Account</a></li>
-					</ul>
+				<div class="inner">
+                    <form method="post" action="/" id="form1">
+                        <h2><input id="loginId" placeholder="User ID"></h2>
+                        <p>Enter your ID above, or create an account.</a></p>
+                        <ul class="actions">
+                            <li><a onClick="f1()" class="button big special">Login</a></li>
+                            <li><a href="newaccount.html" class="button big alt">Create Account</a></li>
+                        </ul>
 				</div>
 			</section>
-
 			
 		<!-- Footer -->
 			<footer id="footer">

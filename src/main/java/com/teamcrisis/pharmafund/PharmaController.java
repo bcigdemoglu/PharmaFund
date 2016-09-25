@@ -29,7 +29,13 @@ class PharmaController {
             return pharmaService.createNewLeader(request.body());
         }, new JsonTransformer());
 
-        put(API_CONTEXT + "/leader/:leaderId/addDrug", "application/json", (request, response) -> {
+        get(API_CONTEXT + "/leader/:leaderId", "application/json", (request, response) -> {
+            response.status(200);
+            response.redirect("/order.html?lid="+request.params(":leaderId"));
+            return Collections.EMPTY_MAP;
+        });
+
+        post(API_CONTEXT + "/leader/:leaderId/addDrug", "application/json", (request, response) -> {
             try {
                 response.status(200);
                 return pharmaService.addDrug(request.params(":leaderId"), request.body());
@@ -40,7 +46,18 @@ class PharmaController {
             }
         }, new JsonTransformer());
 
-        put(API_CONTEXT + "/leader/:leaderId/removeDrug", "application/json", (request, response) -> {
+        post(API_CONTEXT + "/leader/:leaderId/addDrug", "application/json", (request, response) -> {
+            try {
+                response.status(200);
+                return pharmaService.addDrug(request.params(":leaderId"), request.body());
+            } catch (PharmaService.PharmaServiceException ex) {
+                logger.error(ex.getMessage());
+                response.status(Integer.parseInt(ex.getMessage().split(" ")[0]));
+                return Collections.EMPTY_MAP;
+            }
+        }, new JsonTransformer());
+
+        post(API_CONTEXT + "/leader/:leaderId/removeDrug", "application/json", (request, response) -> {
             try {
                 response.status(200);
                 return pharmaService.removeDrug(request.params(":leaderId"), request.body());

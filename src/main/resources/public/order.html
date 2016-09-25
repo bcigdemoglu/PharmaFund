@@ -20,6 +20,21 @@
 			<link rel="stylesheet" href="css/style.css" />
 			<link rel="stylesheet" href="css/style-xlarge.css" />
 		</noscript>
+        <script>
+            var qs = (function(a) {
+                if (a == "") return {};
+                var b = {};
+                for (var i = 0; i < a.length; ++i)
+                {
+                    var p=a[i].split('=', 2);
+                    if (p.length == 1)
+                        b[p[0]] = "";
+                    else
+                        b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+                }
+                return b;
+            })(window.location.search.substr(1).split('&'));
+        </script>
 	</head>
 	<body id="top">
 
@@ -39,12 +54,12 @@
 				<div class="inner">			
 					<form>
 
-					<h2><input type="url" placeholder="Enter Amazon URL"></h2>
+					<h2><input id="amazonLink" type="url" placeholder="Enter Amazon URL"></h2>
 					<form>
 
-					<h2><input type="amount" placeholder="Enter amount"></h2>					
+					<h2><input id="orderAmount" type="amount" placeholder="Enter amount"></h2>
 					<ul class="actions">
-						<li><a href="docfinish.html" class="button big special">Request Order</a></li>
+						<li><a id="sendOrder" href="docfinish.html" class="button big special">Request Order</a></li>
 					</ul>
 				</div>
 			</section>
@@ -76,6 +91,19 @@
 					</ul>
 				</div>
 			</footer>
+			<script>
+                document.getElementById('sendOrder').onclick = function () {
+                    var link = document.querySelector('#amazonLink').value;
+                    var count = document.querySelector('#orderAmount').value;
+                    var params = {"link": link, "count": count};
+                    $.post('/pharma/api/leader/'+qs["lid"]+"/addDrug", JSON.stringify(params), null, 'json')
+                        .done(function (data) {
+                            console.log(data);
+                            self.leaderId = data.leaderId;
+                            console.log(self.leaderId);
+                    });
+                };
+			</script>
 
 	</body>
 </html>
