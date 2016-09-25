@@ -24,7 +24,7 @@ class PharmaController {
     }
 
     private void setupEndpoints() {
-        post(API_CONTEXT + "/leader/", "application/json", (request, response) -> {
+        post(API_CONTEXT + "/leader", "application/json", (request, response) -> {
             response.status(201);
             return pharmaService.createNewLeader(request.body());
         }, new JsonTransformer());
@@ -32,7 +32,7 @@ class PharmaController {
         post(API_CONTEXT + "/leader/:leaderId/addDrug", "application/json", (request, response) -> {
             try {
                 response.status(200);
-                return pharmaService.addDrug(request.params(":gameId"), request.body());
+                return pharmaService.addDrug(request.params(":leaderId"), request.body());
             } catch (PharmaService.PharmaServiceException ex) {
                 logger.error(ex.getMessage());
                 response.status(Integer.parseInt(ex.getMessage().split(" ")[0]));
@@ -40,76 +40,44 @@ class PharmaController {
             }
         }, new JsonTransformer());
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        put(API_CONTEXT + "/games/:gameId", "application/json", (request, response) -> {
+        post(API_CONTEXT + "/leader/:leaderId/removeDrug", "application/json", (request, response) -> {
             try {
                 response.status(200);
-                return boardService.joinGame(request.params(":gameId"));
-            } catch (BoardService.BoardServiceException ex) {
+                return pharmaService.removeDrug(request.params(":leaderId"), request.body());
+            } catch (PharmaService.PharmaServiceException ex) {
                 logger.error(ex.getMessage());
                 response.status(Integer.parseInt(ex.getMessage().split(" ")[0]));
                 return Collections.EMPTY_MAP;
             }
         }, new JsonTransformer());
 
-        post(API_CONTEXT + "/games/:gameId/hmove", "application/json", (request, response) -> {
+        get(API_CONTEXT + "/leader/:leaderId/displayCatalog", "application/json", (request, response) -> {
             try {
                 response.status(200);
-                boardService.hmove(request.params(":gameId"), request.body());
-            } catch (BoardService.BoardServiceException ex) {
-                logger.error(ex.getMessage());
-                response.status(Integer.parseInt(ex.getMessage().split(" ")[0]));
-            }
-            return Collections.EMPTY_MAP;
-        }, new JsonTransformer());
-
-        post(API_CONTEXT + "/games/:gameId/vmove", "application/json", (request, response) -> {
-            try {
-                response.status(200);
-                boardService.vmove(request.params(":gameId"), request.body());
-            } catch (BoardService.BoardServiceException ex) {
-                logger.error(ex.getMessage());
-                response.status(Integer.parseInt(ex.getMessage().split(" ")[0]));
-            }
-            return Collections.EMPTY_MAP;
-        }, new JsonTransformer());
-
-        get(API_CONTEXT + "/games/:gameId/board", "application/json", (request, response) -> {
-            try {
-                response.status(200);
-                return boardService.getBoard(request.params(":gameId"));
-            } catch (BoardService.BoardServiceException ex) {
+                return pharmaService.getAllOrders(request.params(":leaderId"));
+            } catch (PharmaService.PharmaServiceException ex) {
                 logger.error(ex.getMessage());
                 response.status(Integer.parseInt(ex.getMessage().split(" ")[0]));
                 return Collections.EMPTY_MAP;
             }
         }, new JsonTransformer());
 
-        get(API_CONTEXT + "/games/:gameId/state", "application/json", (request, response) -> {
+        get(API_CONTEXT + "/leader/:leaderId/displayLeaderOrders", "application/json", (request, response) -> {
             try {
                 response.status(200);
-                return boardService.getState(request.params(":gameId"));
-            } catch (BoardService.BoardServiceException ex) {
+                return pharmaService.getLeaderOrders(request.params(":leaderId"));
+            } catch (PharmaService.PharmaServiceException ex) {
                 logger.error(ex.getMessage());
                 response.status(Integer.parseInt(ex.getMessage().split(" ")[0]));
                 return Collections.EMPTY_MAP;
             }
         }, new JsonTransformer());
+
+        get(API_CONTEXT + "/donate", "application/json", (request, response) -> {
+            response.status(200);
+            pharmaService.donateToFunds(request.body());
+            return pharmaService.useAvailableFunds();
+        }, new JsonTransformer());
+
     }
 }

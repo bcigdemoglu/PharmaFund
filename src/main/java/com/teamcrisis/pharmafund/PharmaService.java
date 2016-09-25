@@ -3,38 +3,52 @@ package com.teamcrisis.pharmafund;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.awt.image.ImageWatched;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.UUID;
 
 
 /**
- * Service.
+ * Service model.
  */
 public class PharmaService {
 
-    double totalFunds;
-    Catalog catalog;
-    LinkedList<Drug> shipments;
+    private double totalFunds;
+    private Catalog catalog;
+    private LinkedList<Drug> shipments;
+    private HashMap<String, CampLeader> leaderMap;
     private final Logger logger = LoggerFactory.getLogger(PharmaService.class);
 
     /**
-     * Construct the model by creating a map of gameids and boards.
+     * Construct the model.
      */
     public PharmaService() {
-        double totalFunds = 0.0;
-        Catalog catalog = new Catalog();
+        totalFunds = 0.0;
+        catalog = new Catalog();
+        shipments = new LinkedList<>();
+        leaderMap = new HashMap<>();
     }
 
     public CampLeader createNewLeader(String body) {
+        System.out.println(body);
         CampLeader leader = new Gson().fromJson(body, CampLeader.class);
-        // String leaderId = UUID.randomUUID().toString();
+        leaderMap.put(leader.getLeaderId(), leader);
+        return leader;
     }
 
-    public void addDrug(String leaderId, String name, int count) throws PharmaServiceException {
-        String amazonDrugId = getDrugIdFromAmazon("name");
+    public Drug addDrug(String leaderId, String body) throws PharmaServiceException,
+            UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+
+        checkLeader(leaderId);
+
+        DrugTemplate drugTemplate = new Gson().fromJson(body, DrugTemplate.class);
+        String amazonDrugLink = drugTemplate.getLink();
+        String amazonDrugId = getDrugIdFromAmazon(amazonDrugLink);
+        int orderCount = drugTemplate.getCount();
 
         if (amazonDrugId.equals("")) {
             String msg = "PharmaService.addDrug: Amazon item not found";
@@ -42,16 +56,21 @@ public class PharmaService {
             logger.error(msg);
             throw new PharmaServiceException(respCode + " " + msg);
         }
-
-        catalog.addToSet(leaderId, amazonDrugId, count);
+        catalog.addDrug(leaderId, amazonDrugId, orderCount);
+        return catalog.getDrug(amazonDrugId);
     }
 
-    public void removeDrug(String leaderId, String body) throws PharmaServiceException {
+    public Drug removeDrug(String leaderId, String body) throws PharmaServiceException,
+            UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+
+        checkLeader(leaderId);
+
         DrugTemplate drugTemplate = new Gson().fromJson(body, DrugTemplate.class);
-        String amazonDrugId = drugTemplate.getAmazonDrugId();
+        String amazonDrugLink = drugTemplate.getLink();
+        String amazonDrugId = getDrugIdFromAmazon(amazonDrugLink);
         int removeCount = drugTemplate.getCount();
 
-        Drug d = catalog.getDrugFromSet(leaderId, new Drug(amazonDrugId));
+        Drug d = catalog.getDrug(amazonDrugId);
         if (d == null) {
             String msg = "PharmaService.checkDrugInSet: Drug not in list";
             String respCode = "404";
@@ -59,39 +78,36 @@ public class PharmaService {
             throw new PharmaServiceException(respCode + " " + msg);
         }
 
-        int drugCountInSet = d.getLeaderOrder(leaderId);
+        int drugCountInSet = d.getLeaderCount(leaderId);
         if (removeCount > drugCountInSet) {
             String msg = "PharmaService.checkDrugInSet: Drug count in set is " + Integer.toString(drugCountInSet) + ".";
             String respCode = "404";
             logger.error(msg);
             throw new PharmaServiceException(respCode + " " + msg);
         }
-        catalog.removeFromSet(leaderId, amazonDrugId, removeCount);
+
+        return catalog.removeDrug(leaderId, amazonDrugId, removeCount);
     }
 
-    /**
-     * Given the name, checks amazon if the drug exists
-     * Uses amazon API
-     * @param name Drug
-     * @return Amazon id of the drug if exists, otherwise empty string
-     */
-    public String getDrugIdFromAmazon(String name) {
+    public Catalog getAllOrders(String leaderId) throws PharmaServiceException {
+        checkLeader(leaderId);
 
-    }
-
-    public Catalog getAllOrders() {
         return catalog;
     }
 
-    public Catalog getLeaderOrders(String leaderId) {
-        return catalog.getLeaderOrders();
+    public ArrayList<Drug> getLeaderOrders(String leaderId) throws PharmaServiceException {
+        checkLeader(leaderId);
+
+        return catalog.getLeaderOrders(leaderId);
     }
 
-    public LinkedList<Drug> getUpcomingShipments() {
+    public LinkedList<Drug> getUpcomingShipments(String leaderId) throws PharmaServiceException {
+        checkLeader(leaderId);
+
         return shipments;
     }
 
-    public void useAvailableFunds() {
+    public HashMap<String, Double> useAvailableFunds() {
         // Get a list of drugs to be purchased
         LinkedList<Drug> drugsPurchased = catalog.purchaseDrugs(totalFunds);
 
@@ -100,10 +116,14 @@ public class PharmaService {
             totalFunds -= d.getTotalPrice();
         }
         shipments.addAll(drugsPurchased);
+        HashMap<String, Double> funds = new HashMap<>();
+        funds.put("totalFunds", totalFunds);
+        return funds;
     }
 
-    public int donateToFunds(double donation) {
-        totalFunds += donation;
+    public void donateToFunds(String body) {
+        Donation donation = new Gson().fromJson(body, Donation.class);
+        totalFunds += donation.getAmount();
     }
 
     // public void displayShipmentsOnMap() { }
@@ -112,6 +132,16 @@ public class PharmaService {
     // Helper Classes and Methods
     //-----------------------------------------------------------------------------//
 
+    private boolean checkLeader(String leaderId) throws PharmaServiceException {
+        if (!leaderMap.containsKey(leaderId)) {
+            String msg = "PharmaService.checkDrugInSet: Drug not in list";
+            String respCode = "404";
+            logger.error(msg);
+            throw new PharmaServiceException(respCode + " " + msg);
+        }
+        return true;
+    }
+
     /**
      * Thrown when a request from database is invalid
      */
@@ -119,6 +149,26 @@ public class PharmaService {
         public PharmaServiceException(String message) {
             super(message);
         }
+    }
+
+    /**
+     * Given the name, checks amazon if the drug exists
+     * Uses amazon API
+     * @param link Drug link
+     * @return Amazon id of the drug if exists, otherwise empty string
+     */
+    public static String getDrugIdFromAmazon(String link) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+        return AmazonLinkConverter.getAmazonData(link).get(0);
+    }
+
+    public static double getLowestPriceFromAmazon(String amazonDrugId) throws UnsupportedEncodingException,
+            NoSuchAlgorithmException, InvalidKeyException {
+        return AmazonLinkConverter.getPriceFromId(amazonDrugId);
+    }
+
+    public static String getDrugTitleFromAmazon(String amazonDrugId) throws UnsupportedEncodingException,
+            NoSuchAlgorithmException, InvalidKeyException {
+        return AmazonLinkConverter.getTitleFromId(amazonDrugId);
     }
 
 }
