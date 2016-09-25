@@ -36,13 +36,13 @@
 
 		<!-- Banner -->
 			<section id="banner">
-				<div class="inner">			
+				<div class="inner" id="innerDiv">
 					<form id="donateform">
 
-					<h2><input name="amount" value="$"></h2>
+					<h2><input id="amount" placeholder="$"></h2>
 					<p>Please specify how much you would like to donate.</a></p>					
 					<ul class="actions">
-						<li><a href="confinish.html" class="button big special"> Make Donation </a></li>
+						<li><a id="donateButton" class="button big special"> Make Donation </a></li>
 					</ul>
 				</div>
 			</section>
@@ -75,7 +75,17 @@
 				</div>
 			</footer>
 
-		<script src="scripts/donateForm.js"></script>
+		<script>
+		document.getElementById('donateButton').onclick = function () {
+                    var amount = document.querySelector('#amount').value;
+                    var params = {"amount": amount};
+                    $.post('/pharma/api/donate', JSON.stringify(params), null, 'json')
+                        .done(function (data) {
+                            document.getElementById('innerDiv').innerHTML= "<h2>Thank you for your contribution." +
+                            "<br><br>Funds raised $"+ data.totalFunds + ".</h2>";
+                        });
+                };
+        </script>
 
 	</body>
 </html>

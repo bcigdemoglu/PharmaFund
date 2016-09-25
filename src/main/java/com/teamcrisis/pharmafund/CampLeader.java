@@ -10,8 +10,8 @@ public class CampLeader {
     private String leaderId;
 
     public CampLeader() {
-//        this.leaderId = UUID.randomUUID().toString();
-        this.leaderId = Integer.toString(PharmaService.getNewId());
+        this.leaderId = UUID.randomUUID().toString();
+//        this.leaderId = Integer.toString(PharmaService.getNewId());
     }
 
     public CampLeader(String loc) {

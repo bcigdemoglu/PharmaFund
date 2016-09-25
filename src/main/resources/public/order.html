@@ -15,6 +15,8 @@
 		<script src="js/skel.min.js"></script>
 		<script src="js/skel-layers.min.js"></script>
 		<script src="js/init.js"></script>
+        <script src="js/sweetalert.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
 		<noscript>
 			<link rel="stylesheet" href="css/skel.css" />
 			<link rel="stylesheet" href="css/style.css" />
@@ -59,7 +61,8 @@
 
 					<h2><input id="orderAmount" type="amount" placeholder="Enter amount"></h2>
 					<ul class="actions">
-						<li><a id="sendOrder" href="docfinish.html" class="button big special">Request Order</a></li>
+						<li><a id="sendOrder" class="button big special">Request Order</a></li>
+                        <li><a id="viewOrder" class="button big special">View All Orders</a></li>
 					</ul>
 				</div>
 			</section>
@@ -101,8 +104,20 @@
                             console.log(data);
                             self.leaderId = data.leaderId;
                             console.log(self.leaderId);
-                    });
-                };
+                            swal("Good job!", "Your order has been requested.", "success");
+                        }).fail(function() {
+                            sweetAlert("Invalid entry!", " Please try again.", "error");
+                      });
+                    };
+
+                 document.getElementById('viewOrder').onclick = function () {
+                    $.get('/pharma/api/leader/'+qs["lid"]+"/displayCatalog", "{}", null, 'json')
+                        .done(function (data) {
+                            swal("All Orders:", JSON.stringify(data, undefined, 2));
+                        }).fail(function() {
+                            sweetAlert("Invalid account!", " Please create a valid account.", "error");
+                      });
+                    };
 			</script>
 
 	</body>
