@@ -1,1 +1,1 @@
-web:    java -cp target/dependency/*:target/classes Bootstrap
+web:    java -jar ./target/pharmafund-1.0-SNAPSHOT.jar
