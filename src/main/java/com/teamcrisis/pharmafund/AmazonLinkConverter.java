@@ -136,7 +136,6 @@ public class AmazonLinkConverter {
              move++;
              price = price + search;
         }
-        System.out.println("Price: $"+price);
 
         fixedLocation = toString.indexOf("<Title>");
         //System.out.println("Fixed Index=" + fixedLocation);
@@ -151,8 +150,6 @@ public class AmazonLinkConverter {
 
         }
         title = title.substring(0,title.length()-1);
-
-        System.out.println("Title: "+ title);
 
         priceTitle.add(price);
         priceTitle.add(title);

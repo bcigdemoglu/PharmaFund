@@ -11,9 +11,14 @@ function Leader() {
 
     $('form').submit(function (e) {
         var formData = {};
-        $("#myform").serializeArray().map(function(x){formData[x.name] = x.value;});
-        console.log(JSON.stringify(formData));
+        $("#donateform").serializeArray().map(function(x){formData[x.name] = x.value;});\
         self.setup(JSON.stringify(formData));
+        $.post('/pharma/api/leader', JSON.stringify(formData), null, 'json')
+            .done(function (data) {
+                console.log(data);
+                self.leaderId = data.leaderId;
+                console.log(self.leaderId);
+            });
     });
 }
 

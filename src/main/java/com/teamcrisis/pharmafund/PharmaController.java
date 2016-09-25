@@ -29,7 +29,7 @@ class PharmaController {
             return pharmaService.createNewLeader(request.body());
         }, new JsonTransformer());
 
-        post(API_CONTEXT + "/leader/:leaderId/addDrug", "application/json", (request, response) -> {
+        put(API_CONTEXT + "/leader/:leaderId/addDrug", "application/json", (request, response) -> {
             try {
                 response.status(200);
                 return pharmaService.addDrug(request.params(":leaderId"), request.body());
@@ -40,7 +40,7 @@ class PharmaController {
             }
         }, new JsonTransformer());
 
-        post(API_CONTEXT + "/leader/:leaderId/removeDrug", "application/json", (request, response) -> {
+        put(API_CONTEXT + "/leader/:leaderId/removeDrug", "application/json", (request, response) -> {
             try {
                 response.status(200);
                 return pharmaService.removeDrug(request.params(":leaderId"), request.body());
@@ -73,7 +73,7 @@ class PharmaController {
             }
         }, new JsonTransformer());
 
-        get(API_CONTEXT + "/donate", "application/json", (request, response) -> {
+        post(API_CONTEXT + "/donate", "application/json", (request, response) -> {
             response.status(200);
             pharmaService.donateToFunds(request.body());
             return pharmaService.useAvailableFunds();

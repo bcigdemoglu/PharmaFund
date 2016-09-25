@@ -21,6 +21,7 @@ public class PharmaService {
     private Catalog catalog;
     private LinkedList<Drug> shipments;
     private HashMap<String, CampLeader> leaderMap;
+    private static int idCounter = 1;
     private final Logger logger = LoggerFactory.getLogger(PharmaService.class);
 
     /**
@@ -31,6 +32,10 @@ public class PharmaService {
         catalog = new Catalog();
         shipments = new LinkedList<>();
         leaderMap = new HashMap<>();
+    }
+
+    public static int getNewId() {
+        return idCounter++;
     }
 
     public CampLeader createNewLeader(String body) {
@@ -56,6 +61,7 @@ public class PharmaService {
             logger.error(msg);
             throw new PharmaServiceException(respCode + " " + msg);
         }
+        System.out.println(leaderId + " " + amazonDrugId + " " + orderCount);
         catalog.addDrug(leaderId, amazonDrugId, orderCount);
         return catalog.getDrug(amazonDrugId);
     }
@@ -72,7 +78,7 @@ public class PharmaService {
 
         Drug d = catalog.getDrug(amazonDrugId);
         if (d == null) {
-            String msg = "PharmaService.checkDrugInSet: Drug not in list";
+            String msg = "PharmaService.removeDrug: Drug not in list";
             String respCode = "404";
             logger.error(msg);
             throw new PharmaServiceException(respCode + " " + msg);
@@ -80,7 +86,7 @@ public class PharmaService {
 
         int drugCountInSet = d.getLeaderCount(leaderId);
         if (removeCount > drugCountInSet) {
-            String msg = "PharmaService.checkDrugInSet: Drug count in set is " + Integer.toString(drugCountInSet) + ".";
+            String msg = "PharmaService.removeDrug: Drug count in set is " + Integer.toString(drugCountInSet) + ".";
             String respCode = "404";
             logger.error(msg);
             throw new PharmaServiceException(respCode + " " + msg);
@@ -134,7 +140,7 @@ public class PharmaService {
 
     private boolean checkLeader(String leaderId) throws PharmaServiceException {
         if (!leaderMap.containsKey(leaderId)) {
-            String msg = "PharmaService.checkDrugInSet: Drug not in list";
+            String msg = "PharmaService.checkDrugInSet: Leader not in list";
             String respCode = "404";
             logger.error(msg);
             throw new PharmaServiceException(respCode + " " + msg);

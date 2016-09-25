@@ -17,12 +17,15 @@ public class Catalog {
 
     public void addDrug(String leaderId, String amazonDrugId, int orderCount) throws UnsupportedEncodingException,
             NoSuchAlgorithmException, InvalidKeyException {
-
+        System.out.println(leaderId + " " + amazonDrugId + " " + orderCount);
         Drug d = dMap.get(amazonDrugId);
-
+        System.out.println(dMap.toString());
         if (d != null) {
+            System.out.println(d.toString());
             // Update count if drug exists
             d.increaseCount(leaderId, orderCount);
+            System.out.println(d.toString());
+
         } else {
             // Create drug if does not exist
             d = new Drug(leaderId, amazonDrugId, orderCount);

@@ -6,13 +6,12 @@ import java.util.UUID;
  * CampLeader class to identify leaders.
  */
 public class CampLeader {
-    private static int idCounter = 1;
     private String location;
     private String leaderId;
 
     public CampLeader() {
-//        leaderId = UUID.randomUUID().toString();
-        leaderId = Integer.toString(idCounter++);
+//        this.leaderId = UUID.randomUUID().toString();
+        this.leaderId = Integer.toString(PharmaService.getNewId());
     }
 
     public CampLeader(String loc) {

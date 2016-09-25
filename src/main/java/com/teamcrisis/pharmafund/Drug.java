@@ -9,14 +9,12 @@ import java.util.HashMap;
  * Drug object
  */
 public class Drug {
-    private String drugTitle;
     private String amazonDrugId;
     private String amazonLink;
     private HashMap<String, Integer> amountOrdered;
     private double price;
 
     public Drug(Drug d, String leaderId) {
-        this.drugTitle = d.getDrugTitle();
         this.amazonDrugId = d.getAmazonDrugId();
         this.amazonLink = d.getAmazonLink();
         this.price = d.getPrice();
@@ -31,18 +29,16 @@ public class Drug {
         this.amazonDrugId = amazonDrugId;
 
         this.price = PharmaService.getLowestPriceFromAmazon(amazonDrugId);
-        this.drugTitle = PharmaService.getDrugTitleFromAmazon(amazonDrugId);
 
         this.amountOrdered = new HashMap<>();
         this.amountOrdered.put(leaderId, orderCount);
     }
 
     public int getLeaderCount(String leaderId) {
+        if (amountOrdered.get(leaderId) == null) {
+            return 0;
+        }
         return amountOrdered.get(leaderId);
-    }
-
-    public String getDrugTitle() {
-        return drugTitle;
     }
 
     public String getAmazonDrugId() {

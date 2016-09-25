@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"></meta>
+
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/board.css" />
+
+        <script src="scripts/jquery.js"></script>
+        <script src="scripts/bootstrap.min.js"></script>
+        <script src="scripts/underscore.js"></script>
+    </head>
+    <body>
+
+        <div class="page-header text-center">
+            <h1>dots</h1>
+        </div>
+
+        <div class="container">
+
+            <div class="row">
+                <div id="map">
+                    <svg></svg>
+
+                </div>
+            </div>
+
+            <form id="myform">
+                <div>
+                    <input name="location" value="Enter your location" />
+                </div>
+                <p>
+                    <input type="submit" value="Send" />
+                </p>
+            </form>
+
+            <div class="row">
+                <div id="drug-info">
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row center-block">
+                <div class="dropdown">
+                    <button type="button" class="btn btn-secondary dropdown-toggle center-block" data-toggle="dropdown">
+                        Start New Game
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="create-game-red" href="#">As <emph class="red">Red</emph> (goes first)</a></li>
+                        <li><a class="create-game-blue" href="#">As <emph class="blue">Blue</emph> (goes second)</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div id="rest-info">
+                </div>
+            </div>
+
+        </div>
+
+        <script src="scripts/leader.js"></script>
+        <!--<script src="scripts/board.js"></script>-->
+        <!--<script src="scripts/model.js"></script>-->
+        <!--<script src="scripts/view.js"></script>-->
+
+    </body>
+</html>
